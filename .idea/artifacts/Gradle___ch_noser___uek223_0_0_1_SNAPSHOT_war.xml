@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="Gradle : ch.noser : uek223-0.0.1-SNAPSHOT.war">
+    <output-path>$PROJECT_DIR$/uek223/build/libs</output-path>
+    <properties id="gradle-properties">
+      <options external-project-path="$PROJECT_DIR$/uek223" />
+    </properties>
+    <root id="archive" name="uek223-0.0.1-SNAPSHOT.war">
+      <element id="artifact" artifact-name="Gradle : ch.noser : uek223-0.0.1-SNAPSHOT.war (exploded)" />
+    </root>
+  </artifact>
+</component>
