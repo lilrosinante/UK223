@@ -12,9 +12,9 @@
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="uek223.uek223" target="1.8" />
-      <module name="uek223.uek223.main" target="1.8" />
+      <module name="uek223.uek223.main" target="15" />
       <module name="uek223.uek223.main~1" target="1.8" />
-      <module name="uek223.uek223.test" target="1.8" />
+      <module name="uek223.uek223.test" target="15" />
       <module name="uek223.uek223.test~1" target="1.8" />
     </bytecodeTargetLevel>
   </component>

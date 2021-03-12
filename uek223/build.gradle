@@ -1,8 +1,9 @@
 plugins {
-	id 'org.springframework.boot' version '2.5.0-M2'
-	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-	id 'java'
-	id 'war'
+    id 'org.springframework.boot' version '2.5.0-M2'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+    id 'war'
+    id "org.sonarqube" version "3.1.1"
 }
 
 group = 'ch.noser'
@@ -10,37 +11,45 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '8'
 
 repositories {
-	mavenCentral()
-	maven { url 'https://repo.spring.io/milestone' }
+    mavenCentral()
+    maven { url 'https://repo.spring.io/milestone' }
+}
+
+sonarqube {
+    properties {
+        property "sonar.projectKey", "lilrosinante_UK223"
+        property "sonar.organization", "lilrosinante"
+        property "sonar.host.url", "https://sonarcloud.io"
+    }
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	implementation 'org.mapstruct:mapstruct-jdk8:1.4.2.Final'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	runtimeOnly 'org.postgresql:postgresql'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	testImplementation group: 'org.springframework.security', name: 'spring-security-test', version: '5.4.5'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'org.mapstruct:mapstruct-jdk8:1.4.2.Final'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    runtimeOnly 'org.postgresql:postgresql'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    testImplementation group: 'org.springframework.security', name: 'spring-security-test', version: '5.4.5'
 
-	// MapStruct
-	compile "org.mapstruct:mapstruct:1.4.2.Final"
-	compileOnly "org.mapstruct:mapstruct-processor:1.4.2.Final"
-	annotationProcessor "org.mapstruct:mapstruct-processor:1.4.2.Final"
+    // MapStruct
+    compile "org.mapstruct:mapstruct:1.4.2.Final"
+    compileOnly "org.mapstruct:mapstruct-processor:1.4.2.Final"
+    annotationProcessor "org.mapstruct:mapstruct-processor:1.4.2.Final"
 
-	// JWT
-	implementation "io.jsonwebtoken:jjwt:0.9.1"
+    // JWT
+    implementation "io.jsonwebtoken:jjwt:0.9.1"
 
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.mockito:mockito-core'
-	testImplementation 'org.junit.jupiter:junit-jupiter-engine'
-	testImplementation 'org.assertj:assertj-core'
-	// H2
-	runtimeOnly 'com.h2database:h2'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.mockito:mockito-core'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine'
+    testImplementation 'org.assertj:assertj-core'
+    // H2
+    runtimeOnly 'com.h2database:h2'
 
 }
 
 test {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }

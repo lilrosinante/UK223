@@ -1,6 +1,6 @@
 package ch.noser.uek223.domain.user.dto;
 
-import ch.noser.uek223.domain.role.dto.RoleDTOAdmin;
+import ch.noser.uek223.domain.role.dto.RoleDTO;
 
 import java.util.Set;
 import java.util.UUID;
@@ -12,11 +12,11 @@ public class UserDTOAdmin {
     private String surname;
     private String email;
     private String password;
-    private Set<RoleDTOAdmin> roles;
+    private Set<RoleDTO> roles;
 
     public UserDTOAdmin() {}
 
-    public UserDTOAdmin(UUID id, String firstname, String surname, String email, String password, Set<RoleDTOAdmin> roles) {
+    public UserDTOAdmin(UUID id, String firstname, String surname, String email, String password, Set<RoleDTO> roles) {
 
         this.id = id;
         this.firstname = firstname;
@@ -71,11 +71,11 @@ public class UserDTOAdmin {
         return this;
     }
 
-    public Set<RoleDTOAdmin> getRoles() {
+    public Set<RoleDTO> getRoles() {
         return roles;
     }
 
-    public UserDTOAdmin setRoles(Set<RoleDTOAdmin> roles) {
+    public UserDTOAdmin setRoles(Set<RoleDTO> roles) {
         this.roles = roles;
         return this;
     }

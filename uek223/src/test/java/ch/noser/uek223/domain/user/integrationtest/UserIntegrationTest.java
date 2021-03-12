@@ -1,16 +1,16 @@
 package ch.noser.uek223.domain.user.integrationtest;
 
 import ch.noser.uek223.domain.authority.Authority;
-import ch.noser.uek223.domain.authority.dto.AuthorityDTOAdmin;
-import ch.noser.uek223.domain.product.Product;
-import ch.noser.uek223.domain.purchase.Purchase;
+import ch.noser.uek223.domain.authority.AuthorityRepository;
+import ch.noser.uek223.domain.authority.dto.AuthorityDTO;
 import ch.noser.uek223.domain.role.Role;
-import ch.noser.uek223.domain.role.dto.RoleDTOAdmin;
+import ch.noser.uek223.domain.role.RoleRepository;
+import ch.noser.uek223.domain.role.dto.RoleDTO;
 import ch.noser.uek223.domain.user.User;
+import ch.noser.uek223.domain.user.UserMapper;
 import ch.noser.uek223.domain.user.UserRepository;
 import ch.noser.uek223.domain.user.dto.UserDTOAdmin;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,9 +26,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.util.Collection;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -37,38 +35,50 @@ import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-@TestPropertySource(locations = "classpath:application-test.properties")
 @DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
+@TestPropertySource("classpath:application-test.properties")
 public class UserIntegrationTest {
 
     @Autowired
     private UserRepository userRepository;
 
     @Autowired
-    private MockMvc mvc;
+    private RoleRepository roleRepository;
 
-    @BeforeEach
-    public void setUp(){}
+    @Autowired
+    private AuthorityRepository authorityRepository;
 
-    @WithMockUser
+    @Autowired
+    private UserMapper userMapper;
+
+    @Autowired
+    private MockMvc mockMvc;
+
     @Test
+    @WithMockUser(username = "tester", password = "password", authorities = "CAN_RETRIEVE_ALL_USERS")
     public void findById_requestUserById_returnsUser() throws Exception {
         UUID uuidToBeTestedAgainst = UUID.randomUUID();
-        Set<Authority> authoritiesToBeTestedAgainst = Stream.of(new Authority().setName("USER_SEE"), new Authority().setName("USER_CREATE"), new Authority().setName("USER_MODIFY"), new Authority().setName("USER_DELETE")).collect(Collectors.toSet());
-        Set<Role> rolesToBeTestedAgainst = Stream.of(new Role().setName("BASIC_USER").setAuthorities(authoritiesToBeTestedAgainst)).collect(Collectors.toSet());
-        User userToBeTestedAgainst = new User(uuidToBeTestedAgainst, "john.doe@gmail.com", "John", "Doe", "123", null, null, null);
+
+        Set<Authority> authoritiesToBeTestedAgainst = Stream.of(new Authority().setName("CAN_READ_ALL_PRODUCTS"), new Authority().setName("CAN_READ_PRODUCT"), new Authority().setName("CAN_UPDATE_PURCHASE"), new Authority().setName("CAN_DELETE_USER")).collect(Collectors.toSet());
+        authorityRepository.saveAll(authoritiesToBeTestedAgainst);
+
+        Set<Role> rolesToBeTestedAgainst = Stream.of(new Role().setName("CUSTOMER").setAuthorities(authoritiesToBeTestedAgainst)).collect(Collectors.toSet());
+        roleRepository.saveAll(rolesToBeTestedAgainst);
+
+        User userToBeTestedAgainst = new User().setFirstname("John").setSurname("Tester").setEmail("jt@testmail.com").setPassword(new BCryptPasswordEncoder().encode(uuidToBeTestedAgainst.randomUUID().toString())).setRoles(rolesToBeTestedAgainst);
         userRepository.save(userToBeTestedAgainst);
-        Set<AuthorityDTOAdmin> authorityDTOSToBeTestedAgainst = Stream.of(new AuthorityDTOAdmin().setName("USER_SEE"), new AuthorityDTOAdmin().setName("USER_CREATE"), new AuthorityDTOAdmin().setName("USER_MODIFY"), new AuthorityDTOAdmin().setName("USER_DELETE")).collect(Collectors.toSet());
-        Set<RoleDTOAdmin> roleDTOSToBeTestedAgainst = Stream.of(new RoleDTOAdmin().setName("BASIC_USER").setAuthorities(authorityDTOSToBeTestedAgainst)).collect(Collectors.toSet());
-        UserDTOAdmin userDTOToBeTestedAgainst = new UserDTOAdmin(userToBeTestedAgainst.getId(), userToBeTestedAgainst.getEmail(), userToBeTestedAgainst.getFirstname(),userToBeTestedAgainst.getSurname(), userToBeTestedAgainst.getPassword() ,null);
-        mvc.perform(
-                MockMvcRequestBuilders.get("/users/{id}", userDTOToBeTestedAgainst.getId()).accept(MediaType.APPLICATION_JSON))
+
+        UserDTOAdmin userDTOToBeTestedAgainst = userMapper.userToUserDTOAdmin(userToBeTestedAgainst);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/users/{id}", userDTOToBeTestedAgainst.getId())
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(userDTOToBeTestedAgainst.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(userDTOToBeTestedAgainst.getId().toString()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.firstname").value(userDTOToBeTestedAgainst.getFirstname()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.surname").value(userDTOToBeTestedAgainst.getSurname()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.email").value(userDTOToBeTestedAgainst.getEmail()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.roles[*].name").value(Matchers.containsInAnyOrder(userDTOToBeTestedAgainst.getRoles().stream().map(RoleDTOAdmin::getName).toArray())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.roles[*].authorities[*].name").value(Matchers.containsInAnyOrder(userDTOToBeTestedAgainst.getRoles().stream().map(RoleDTOAdmin::getAuthorities).flatMap(Collection::stream).map(AuthorityDTOAdmin::getName).toArray())));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.roles[*].name").value(Matchers.containsInAnyOrder(userDTOToBeTestedAgainst.getRoles().stream().map(RoleDTO::getName).toArray())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.roles[*].authorities[*].name").value(Matchers.containsInAnyOrder(userDTOToBeTestedAgainst.getRoles().stream().map(RoleDTO::getAuthorities).flatMap(Collection::stream).map(AuthorityDTO::getName).toArray())));
     }
 }
