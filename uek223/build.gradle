@@ -15,10 +15,6 @@ repositories {
     maven { url 'https://repo.spring.io/milestone' }
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.1'
-}
-
 sonarqube {
     properties {
         property "sonar.projectKey", "lilrosinante_UK223"
