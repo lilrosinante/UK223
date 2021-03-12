@@ -26,7 +26,10 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAll();
     }
 
-    public User findById(UUID id){return userRepository.findById(id).get();}
+    public User findById(UUID id){
+        Optional<User> userOptional = userRepository.findById(id);
+        return userOptional.orElseGet(User::new);
+    }
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {

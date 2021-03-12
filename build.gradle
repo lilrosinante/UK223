@@ -47,7 +47,6 @@ dependencies {
     testImplementation 'org.assertj:assertj-core'
     // H2
     runtimeOnly 'com.h2database:h2'
-
 }
 
 test {

@@ -3,15 +3,31 @@ node_js:
   - 10
 stages:
   - continousIntegration
+  - continousDelivery
 before_install:
   - chmod +x gradlew
   - sudo apt-get update
+install:
+  - sudo apt install curl
+  - npm install -g newman
 addons:
   sonarcloud:
     organization: $SONAR_USER
     token: $SONAR_TOKEN
 jobs:
   include:
-    - stage: continousIntegration
+    - stage: Build Automation
       script: ./gradlew sonarqube
-      script2: ./gradlew test
+      script2: ./gradlew test --tests C:\Users\jacky\Documents\ueK_Modul_223\Projects\UK223\src\test\java\ch\noser\uek223\domain\user\unittesting
+    - stage: Continous Integration
+      deploy:
+        script: ./gradlew test --tests C:\Users\jacky\Documents\ueK_Modul_223\Projects\UK223\src\test\java\ch\noser\uek223\domain\user\integrationtest
+        provider: heroku
+        api_key: $HEROKU_API_KEY
+        app: $HEROKU_STAGING_APP
+      after_success:
+      script:
+        - while [ $(curl -o /dev/null -s -w "%{http_code}\n" https://$HEROKU_STAGING_APP.herokuapp.com/) != 404 ];do echo 'Waiting for the Application to be started'; sleep 10; done
+        - newman run src/test/java/systemtests/collection/CRUD.postman_collection.json -e src/test/java/systemtests/environment/xinnyi.postman_environment.json
+    - stage: Continous Delivery
+      script: ./gradlew test

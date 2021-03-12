@@ -23,7 +23,7 @@ public class UserRepositoryUnitTest {
     @Autowired
     private UserRepository userRepository;
 
-    @Test
+    /*@Test
     public void save_saveNewUser_savedUser() throws Exception {
         User user = new User();
         user.setFirstname("Test First Name").setSurname("Test Last Name").setEmail("Test Email").setPassword("Test Password");
@@ -33,5 +33,5 @@ public class UserRepositoryUnitTest {
         user.setId(userActual.getId());
 
         assertThat(user).isEqualTo(userActual);
-    }
+    }*/
 }
