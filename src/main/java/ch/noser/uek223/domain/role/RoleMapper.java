@@ -1,6 +1,6 @@
 package ch.noser.uek223.domain.role;
 
-import ch.noser.uek223.domain.role.dto.RoleDTOAdmin;
+import ch.noser.uek223.domain.role.dto.RoleDTO;
 import org.mapstruct.Mapper;
 
 import java.util.List;
@@ -8,8 +8,8 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface RoleMapper {
 
-    RoleDTOAdmin roleToRoleDTOAdmin(Role role);
+    RoleDTO roleToRoleDTOAdmin(Role role);
 
-    List<RoleDTOAdmin> rolesToRoleDTOAdmin(List<Role> roles);
+    List<RoleDTO> rolesToRoleDTOAdmin(List<Role> roles);
 
 }
